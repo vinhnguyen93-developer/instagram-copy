@@ -11,3 +11,44 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.form-container {
+  margin-top: 5rem;
+  background-color: #fff;
+  padding: 30px 40px;
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px 0px #000;
+  text-align: center;
+}
+
+.card-container {
+  margin-top: 2rem;
+}
+
+.cursor {
+  cursor: pointer;
+}
+
+.active {
+  color: #00A0FA;
+  cursor: pointer;
+}
+
+.user-name {
+  font-weight: bold;
+  color: #000;
+}
+
+.comment {
+  border: none;
+}
+
+.comment:focus {
+  outline: none;
+}
+
+.btn-active {
+  color: #00A5C9;
+  border: none;
+  background-color: #fff;
+}
