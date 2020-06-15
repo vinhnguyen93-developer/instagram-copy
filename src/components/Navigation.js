@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Component } from 'react';
 import {
   Collapse,
   Navbar,
@@ -8,63 +8,111 @@ import {
   NavItem,
   NavLink
 } from 'reactstrap';
-import { Link } from 'react-router-dom';
+import { Link, withRouter, Redirect } from 'react-router-dom';
+import jwt_decode from 'jwt-decode';
 
 import logo from '../assets/logo.png';
-import browser from '../assets/browser.png';
-import notification from '../assets/notification.png';
-import photo from '../assets/photo.png';
+// import browser from '../assets/browser.png';
+// import notification from '../assets/notification.png';
+// import photo from '../assets/photo.png';
 
-export default function Navigation() {
-  const [isOpen, setIsOpen] = useState(false);
+class Navigation extends Component {
+  constructor(props) {
+    super(props);
 
-  const toggle = () => setIsOpen(!isOpen);
+    this.state = {
+      isOpen: false,
+      profilePictureUrl: ''
+    }
 
-  return (
-    <div>
-      <Navbar color="light" light expand="md">
-        <NavbarBrand className="ml-5 mr-5">
+    this.toggle = this.toggle.bind(this);
+  }
+
+  componentDidMount() {
+    const token = localStorage.usertoken;
+    const decoded = jwt_decode(token);
+
+    this.setState({
+      profilePictureUrl: decoded.profilePictureUrl
+    });
+  }
+
+  logOut(event) {
+    event.preventDefault();
+    localStorage.removeItem('usertoken');
+    this.props.history.push('/login');
+  }
+
+  toggle() {
+    this.setState({
+      isOpen: !this.state.isOpen
+    })
+  }
+
+  render() {
+
+    const loginRegisterLink = (
+      <Nav className="ml-auto mr-5" navbar>
+        <NavItem>
+          <NavLink>
+            <Link to="/login">
+              Login
+            </Link>
+          </NavLink>
+        </NavItem>
+      </Nav>
+    );
+
+    const userLink = (
+      <Nav className="ml-auto mr-5" navbar>
+        <NavItem>
           <Link to="/">
-            <img src={logo} />
+            <NavLink>
+              Home
+            </NavLink>
           </Link>
-        </NavbarBrand>
-        <form class="form-inline my-2 my-lg-0">
-          <input class="form-control mr-sm-2" type="search" placeholder="Tìm kiếm..." aria-label="Search" />
-        </form>
-        <NavbarToggler onClick={toggle} />
-        <Collapse isOpen={isOpen} navbar>
-          <Nav className="ml-auto mr-5" navbar>
-            <NavItem>
-              <NavLink>
-                <Link to="/">
-                  <img src={browser} />
-                </Link>
-              </NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink>
-                <Link to="/">
-                  <img src={photo} />
-                </Link>
-              </NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink>
-                <Link to="/">
-                  <img src={notification} />
-                </Link>
-              </NavLink>
-            </NavItem>
-            <NavItem>
-              <NavLink>
-                <Link to="/login">
-                  <img src="https://picsum.photos/id/237/200/300" className="rounded-circle" width={32} height={32} />
-                </Link>
-              </NavLink>
-            </NavItem>
-          </Nav>
-        </Collapse>
-      </Navbar>
-    </div>
-  );
+        </NavItem>
+        <NavItem>
+          <Link to="/posts">
+            <NavLink>
+              Post
+            </NavLink>
+          </Link>
+        </NavItem>
+        <NavItem>
+          <NavLink onClick={this.logOut} href="#">
+            Logout
+          </NavLink>
+        </NavItem>
+        <NavItem>
+          <NavLink>
+            <Link to="/profile">
+              <img src={this.state.profilePictureUrl} className="rounded-circle" width={32} height={32} />
+            </Link>
+          </NavLink>
+        </NavItem>
+      </Nav>
+    );
+
+    return (
+      <div>
+        <Navbar color="light" light expand="md">
+          <NavbarBrand className="ml-5 mr-5">
+            <Link to="/">
+              <img src={logo} />
+            </Link>
+          </NavbarBrand>
+          <form class="form-inline my-2 my-lg-0">
+            <input class="form-control mr-sm-2" type="search" placeholder="Search..." aria-label="Search" />
+          </form>
+          <NavbarToggler onClick={this.toggle} />
+          <Collapse isOpen={this.state.isOpen} navbar>
+            {localStorage.usertoken ? userLink : loginRegisterLink}
+          </Collapse>
+        </Navbar>
+      </div>
+    );
+  }
 }
+
+export default withRouter(Navigation);
